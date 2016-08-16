@@ -14,7 +14,7 @@ server.serializeClient(function(client, done) {
 })
 
 server.deserializeClient(function(id, done) {
-    db.collection('clients').find({clientId: id}, function(err, client) {
+    db.collection('clients').findOne({clientId: id}, function(err, client) {
         if (err) return done(err)
         return done(null, client)
     })
@@ -25,9 +25,9 @@ server.grant(oauth2orize.grant.code(function(client, redirectURI, user, ares, do
     var code = utils.uid(16)
     var codeHash = crypto.createHash('sha1').update(code).digest('hex')
     
-    db.collection('authorizationCodes').save({code: codeHash, clientId: client._id, redirectURI: redirectURI, userId: user.username}, function(err) {
+    db.collection('authorizationCodes').save({code: codeHash, clientId: client.clientId, redirectURI: redirectURI, userId: user.username}, function(err) {
         if (err) return done(err)
-        done(null, code)
+        done(null, codeHash)
     })
 }))
 
